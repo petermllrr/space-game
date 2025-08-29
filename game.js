@@ -129,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     startButton.addEventListener('click', startGame);
+    playerNameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            startGame();
+        }
+    });
     endGameButton.addEventListener('click', endGame);
     window.addEventListener('resize', resizeCanvas);
 

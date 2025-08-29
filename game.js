@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const highscoreList = document.getElementById('highscore-list');
     const endGameButton = document.getElementById('end-game-button');
 
+    playerNameInput.focus();
+
     let playerName = '';
     let asteroids = [];
     let enemies = [];

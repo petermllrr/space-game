@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="start-screen">
+        <h1>Space Game</h1>
+        <input type="text" id="player-name" placeholder="Enter your name">
+        <button id="start-button">Start</button>
+    </div>
+    <div id="game-container" style="display: none;">
+        <canvas id="game-canvas"></canvas>
+        <div id="ui-container">
+            <div id="tutorial">
+                <h2>Controls</h2>
+                <p>Up Arrow: Accelerate</p>
+                <p>Down Arrow: Decelerate</p>
+                <p>Left/Right Arrows: Rotate</p>
+                <p>Space: Shoot</p>
+            </div>
+            <div id="highscore">
+                <h2>Highscore</h2>
+                <ol id="highscore-list"></ol>
+            </div>
+            <button id="end-game-button">End Game</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

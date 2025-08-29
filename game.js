@@ -93,10 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(enemyInterval);
             enemyInterval = null;
         }
-        highscores.push({ name: playerName, score: score });
-        highscores.sort((a, b) => b.score - a.score);
-        highscores = highscores.slice(0, 10);
-        updateHighscore();
+        if (score > 0) {
+            highscores.push({ name: playerName, score: score });
+            highscores.sort((a, b) => b.score - a.score);
+            highscores = highscores.slice(0, 10);
+            updateHighscore();
+        }
 
         // Show game over screen
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -132,10 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
             enemyInterval = null;
         }
         
-        highscores.push({ name: playerName, score: score });
-        highscores.sort((a, b) => b.score - a.score);
-        highscores = highscores.slice(0, 10);
-        updateHighscore();
+        if (score > 0) {
+            highscores.push({ name: playerName, score: score });
+            highscores.sort((a, b) => b.score - a.score);
+            highscores = highscores.slice(0, 10);
+            updateHighscore();
+        }
 
         const playAgainButton = document.querySelector('body > button');
         if (playAgainButton && playAgainButton.textContent === 'Play Again') {

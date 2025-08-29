@@ -40,12 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function createAsteroids(count) {
         asteroids = [];
         for (let i = 0; i < count; i++) {
+            const size = Math.random() * 40 + 20;
+            const vertices = [];
+            const numVertices = Math.floor(Math.random() * 5) + 7; // 7 to 12 vertices
+            for (let j = 0; j < numVertices; j++) {
+                const angle = (j / numVertices) * Math.PI * 2;
+                const radius = size / 2 + (Math.random() - 0.5) * (size / 4);
+                vertices.push({
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius,
+                });
+            }
             asteroids.push({
                 x: Math.random() * 2000 - 1000,
                 y: Math.random() * 2000 - 1000,
                 vx: Math.random() * 2 - 1,
                 vy: Math.random() * 2 - 1,
-                size: Math.random() * 40 + 20,
+                size: size,
+                vertices: vertices,
             });
         }
     }
@@ -349,19 +361,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Draw player
         ctx.save();
         ctx.translate(player.x, player.y);
-        ctx.rotate(player.angle + Math.PI / 2);
-        ctx.font = `${player.size}px VT323, monospace`;
-        ctx.fillStyle = '#fff';
-        ctx.textAlign = 'center';
-        ctx.fillText('▲', 0, 0);
+        ctx.rotate(player.angle);
+        ctx.beginPath();
+        ctx.moveTo(player.size / 2, 0);
+        ctx.lineTo(-player.size / 2, -player.size / 3);
+        ctx.lineTo(-player.size / 2, player.size / 3);
+        ctx.closePath();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
         ctx.restore();
 
         // Draw asteroids
         asteroids.forEach(asteroid => {
-            ctx.font = `${asteroid.size}px VT323, monospace`;
-            ctx.fillStyle = '#fff';
-            ctx.textAlign = 'center';
-            ctx.fillText('●', asteroid.x, asteroid.y);
+            ctx.save();
+            ctx.translate(asteroid.x, asteroid.y);
+            ctx.beginPath();
+            ctx.moveTo(asteroid.vertices[0].x, asteroid.vertices[0].y);
+            for (let i = 1; i < asteroid.vertices.length; i++) {
+                ctx.lineTo(asteroid.vertices[i].x, asteroid.vertices[i].y);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.restore();
         });
 
         // Draw enemies

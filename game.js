@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let enemies = [];
     let bullets = [];
     let explosions = [];
+    let exhaustParticles = [];
+    let thrustParticles = [];
     let score = 0;
     let highscores = [];
     let gameOver = false;
@@ -85,9 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
         player.y = 0;
         player.vx = 0.1;
         player.vy = 0.1;
+        player.exhaustTimer = 0;
         enemies = [];
         bullets = [];
         explosions = [];
+        exhaustParticles = [];
+        thrustParticles = [];
         resizeCanvas();
         createAsteroids(20);
         if (enemyInterval) clearInterval(enemyInterval);
@@ -190,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         thrusting: false,
         slowing: false,
         size: 20,
+        exhaustTimer: 0,
     };
 
     const keys = {
@@ -296,6 +302,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const force = 0.1;
             player.vx += Math.cos(player.angle) * force;
             player.vy += Math.sin(player.angle) * force;
+
+            // Create thrust particles
+            const backX = player.x - Math.cos(player.angle) * (player.size / 2);
+            const backY = player.y - Math.sin(player.angle) * (player.size / 2);
+            for (let i = 0; i < 1; i++) {
+                const angle = player.angle + Math.PI + (Math.random() - 0.5) * 0.6;
+                const speed = Math.random() * 1.5 + 0.5;
+                thrustParticles.push({
+                    x: backX,
+                    y: backY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 2 + 1,
+                    life: 1,
+                });
+            }
         }
 
         if (player.slowing) {
@@ -310,6 +332,23 @@ document.addEventListener('DOMContentLoaded', () => {
             player.vy = (player.vy / speed) * maxSpeed;
         }
 
+        // Create exhaust particles if the ship is moving
+        if (speed > 0.1) {
+            player.exhaustTimer--;
+            if (player.exhaustTimer <= 0) {
+                const backX = player.x - Math.cos(player.angle) * (player.size / 2);
+                const backY = player.y - Math.sin(player.angle) * (player.size / 2);
+                exhaustParticles.push({
+                    x: backX,
+                    y: backY,
+                    vx: 0,
+                    vy: 0,
+                    size: Math.random() * 2 + 1,
+                    life: 1,
+                });
+                player.exhaustTimer = 3;
+            }
+        }
 
         player.x += player.vx;
         player.y += player.vy;
@@ -346,6 +385,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Update exhaust particles
+        exhaustParticles.forEach((p, index) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.01;
+            if (p.life <= 0) {
+                exhaustParticles.splice(index, 1);
+            }
+        });
+
+        // Update thrust particles
+        thrustParticles.forEach((p, index) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.04;
+            if (p.life <= 0) {
+                thrustParticles.splice(index, 1);
+            }
+        });
+
         checkCollisions();
     }
 
@@ -357,6 +416,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.save();
         ctx.translate(canvas.width / 2 - player.x, canvas.height / 2 - player.y);
+
+        // Draw exhaust particles
+        exhaustParticles.forEach(p => {
+            ctx.fillStyle = `rgba(255, 255, 255, ${p.life})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Draw thrust particles
+        thrustParticles.forEach(p => {
+            ctx.fillStyle = `rgba(255, 255, 255, ${p.life})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
 
         // Draw player
         ctx.save();

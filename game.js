@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let highscores = [];
     let gameOver = false;
     const maxEnemies = 2;
+    let enemyInterval = null;
 
     function resizeCanvas() {
         canvas.width = window.innerWidth;
@@ -77,7 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         explosions = [];
         resizeCanvas();
         createAsteroids(20);
-        const enemyInterval = setInterval(spawnEnemy, 5000);
+        if (enemyInterval) clearInterval(enemyInterval);
+        enemyInterval = setInterval(spawnEnemy, 5000);
         
         if (!gameLoop.running) {
             gameLoop.running = true;
@@ -87,6 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function endGame() {
         gameOver = true;
+        if (enemyInterval) {
+            clearInterval(enemyInterval);
+            enemyInterval = null;
+        }
         highscores.push({ name: playerName, score: score });
         highscores.sort((a, b) => b.score - a.score);
         highscores = highscores.slice(0, 10);
@@ -119,6 +125,27 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(playAgainButton);
     }
 
+    function returnToStartScreen() {
+        gameOver = true;
+        if (enemyInterval) {
+            clearInterval(enemyInterval);
+            enemyInterval = null;
+        }
+        
+        highscores.push({ name: playerName, score: score });
+        highscores.sort((a, b) => b.score - a.score);
+        highscores = highscores.slice(0, 10);
+        updateHighscore();
+
+        const playAgainButton = document.querySelector('body > button');
+        if (playAgainButton && playAgainButton.textContent === 'Play Again') {
+            document.body.removeChild(playAgainButton);
+        }
+
+        gameContainer.style.display = 'none';
+        startScreen.style.display = 'block';
+    }
+
     function updateHighscore() {
         highscoreList.innerHTML = '';
         highscores.forEach(score => {
@@ -134,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             startGame();
         }
     });
-    endGameButton.addEventListener('click', endGame);
+    endGameButton.addEventListener('click', returnToStartScreen);
     window.addEventListener('resize', resizeCanvas);
 
     const player = {

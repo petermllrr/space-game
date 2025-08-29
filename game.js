@@ -494,6 +494,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         ctx.restore();
+
+        // Draw score
+        ctx.fillStyle = '#fff';
+        ctx.font = '24px VT323, monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Score: ${score}`, 10, 30);
     }
 
     function gameLoop() {
